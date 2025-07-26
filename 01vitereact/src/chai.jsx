@@ -4,4 +4,5 @@ function Chai(){
     )
 }
 
-export default Chai
+export {Chai}
+
