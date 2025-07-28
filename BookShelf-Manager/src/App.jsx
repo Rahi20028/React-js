@@ -1,116 +1,139 @@
 import { useState, useEffect } from "react";
 
 function App() {
-  // Book List
-
   const [books, setBooks] = useState(() => {
-    const saved = localStorage.getItem('books')
-    return saved ? JSON.parse(saved) : []
-  })
+    const saved = localStorage.getItem('books');
+    return saved ? JSON.parse(saved) : [];
+  });
 
-  // inputs
-
-  const [title, settitle] = useState('')
-  const [author, setauthor] = useState('')
-  const [status, setstatus] = useState('wants to read ')
-
-  // filter
-
-  const [filter, setfilter] = useState('all')
-
-  // save to localstorage
+  const [title, settitle] = useState('');
+  const [author, setauthor] = useState('');
+  const [status, setstatus] = useState('Want to Read');
+  const [filter, setfilter] = useState('all');
 
   useEffect(() => {
-    localStorage.setItem('books', JSON.stringify(books))
-  }, [books])
-
-  // add books
+    localStorage.setItem('books', JSON.stringify(books));
+  }, [books]);
 
   const handleAddBook = (e) => {
-    e.preventDefault()
-    if (!title || !author) return alert("fill the fields!")
+    e.preventDefault();
+    if (!title || !author) return alert("Please fill in all fields!");
+
     const newBook = {
       id: Date.now(),
       title,
       author,
-      status
+      status,
+    };
 
-    }
-
-    setBooks([...books, newBook])
-    settitle('')
-    setauthor('')
-    setstatus('')
-
-  }
-
-  // delete book
+    setBooks([...books, newBook]);
+    settitle('');
+    setauthor('');
+    setstatus('Want to Read');
+  };
 
   const handelDelete = (id) => {
-    setBooks(books.filter(book => book.id !== id))
-  }
-
-  // filtered list
+    setBooks(books.filter(book => book.id !== id));
+  };
 
   const filterBooks = filter === 'all'
     ? books
-    : books.filter(book => book.status === filter)
+    : books.filter(book => book.status.toLowerCase() === filter.toLowerCase());
+
+  const containerStyle = {
+    padding: '30px',
+    maxWidth: '600px',
+    margin: 'auto',
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '12px',
+    boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+  };
+
+  const inputStyle = {
+    width: '100%',
+    padding: '10px',
+    marginBottom: '12px',
+    borderRadius: '6px',
+    border: '1px solid #ccc',
+  };
+
+  const buttonStyle = {
+    padding: '10px 20px',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+  };
+
+  const bookCardStyle = {
+    backgroundColor: '#fff',
+    padding: '15px',
+    marginBottom: '15px',
+    borderRadius: '8px',
+    boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+  };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '500px', margin: 'auto' }}>
-      <h1>BookShelf Manager</h1>
-      <form onSubmit={handleAddBook} style={{ marginBottom: '20px' }}>
+    <div style={containerStyle}>
+      <h1 style={{ textAlign: 'center', color: '#333' }}>📚 BookShelf Manager</h1>
+
+      <form onSubmit={handleAddBook}>
         <input
-          placeholder="Book title"
+          style={inputStyle}
+          placeholder="Book Title"
           value={title}
           onChange={(e) => settitle(e.target.value)}
-          style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
-
         />
         <input
-          placeholder="author"
+          style={inputStyle}
+          placeholder="Author"
           value={author}
           onChange={(e) => setauthor(e.target.value)}
-          style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
         />
         <select
+          style={inputStyle}
           value={status}
           onChange={(e) => setstatus(e.target.value)}
-          style={{ width: '100%', padding: '8px', marginBottom: '10px' }}>
-
-          <option >Want to read</option>
-          <option >Currently Reading</option>
-          <option >Read</option>
+        >
+          <option>Want to Read</option>
+          <option>Currently Reading</option>
+          <option>Read</option>
         </select>
-        <button type="submit" style={{ padding: '10px 15px' }}>Add Book</button>
+        <button type="submit" style={buttonStyle}>➕ Add Book</button>
       </form>
 
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ margin: '20px 0' }}>
         <select
+          style={inputStyle}
           value={filter}
           onChange={(e) => setfilter(e.target.value)}
-          style={{ width: '100%', padding: '8px' }}>
-          <option value="All">All</option>
+        >
+          <option value="all">All</option>
           <option value="Want to Read">Want to Read</option>
-          <option value="currently reading">currently reading</option>
-          <option value="read">read</option>
+          <option value="Currently Reading">Currently Reading</option>
+          <option value="Read">Read</option>
         </select>
       </div>
 
-      <h2>Your Books</h2>
+      <h2 style={{ color: '#333' }}>📖 Your Books</h2>
       {filterBooks.length === 0 ? (
-        <p>No Books Found</p>
+        <p>No Books Found.</p>
       ) : (
-        <ul style={{ padding: '0', listStyle: 'none' }}>
-          {filterBooks.map((book) => (
-            <li key={book.id} style={{ marginBottom: '15px', borderBottom: '1px solid #ccc', paddingBottom: '10px' }}>
-              <strong>{book.title}</strong><br />
-              <small>{book.author}</small><br />
-              <span>Status : {book.status}</span><br />
-              <button onClick={() => handelDelete(book.id)} style={{ margin: '5px' }}>Delete </button>
-            </li>
-          ))}
-        </ul>
+        filterBooks.map((book) => (
+          <div key={book.id} style={bookCardStyle}>
+            <h3 style={{ margin: '0 0 5px 0' }}>{book.title}</h3>
+            <p style={{ margin: '0 0 5px 0' }}><strong>Author:</strong> {book.author}</p>
+            <p style={{ margin: '0 0 10px 0' }}><strong>Status:</strong> {book.status}</p>
+            <button
+              onClick={() => handelDelete(book.id)}
+              style={{ ...buttonStyle, backgroundColor: '#dc3545' }}
+            >
+              🗑️ Delete
+            </button>
+          </div>
+        ))
       )}
     </div>
   );
